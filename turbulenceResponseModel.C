@@ -208,40 +208,19 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &nutc = phaseSystem_.phase2().turbulence().nut();
     const volScalarField &kc = phaseSystem_.phase2().turbulence().k();
     const volScalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
+    
+    forAll(rhod,i)
+    {
+        scalar Le = 0.09 * pow(kc[i] + 1E-8, 1.5) / (epsilonc[i]+1E-8);
+        scalar uPrimec = sqrt(2. * (kc[i] + 1E-8) / 3.);
 
-    dimensionedScalar epsilonRes(
-        "epsilonRes",
-        epsilonc.dimensions(),
-        1E-8);
+        scalar ReT = uPrimec * Le / nuc[i];
 
-    dimensionedScalar kRes(
-        "kRes",
-        kc.dimensions(),
-        1E-8);
+        scalar beta = (12. * phaseSystem_.Kd()[i] / M_PI / d[i] / muc[i]) * (Le * Le / d[i] / d[i]) / (ReT + 1E-4);
 
-    Info << "Le" << endl;
-    volScalarField Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
-
-    Info << "uPrimec" << endl;
-    volScalarField uPrimec = sqrt(2. * (kc + kRes) / 3.);
-
-    Info << "ReT" << endl;
-    volScalarField ReT = uPrimec * Le / nuc;
-
-    dimensionedScalar ReTRes(
-        "ReTRes",
-        ReT.dimensions(),
-        1E-4);
-        
-    Info << "beta" << endl;
-    volScalarField beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + ReTRes);
-
-    Info << "Ct" << endl;
-    volScalarField Ct = (3. * One + beta) / (1. * One + beta + 2. * rhod / rhoc);
-
-    Info << max(Ct) << endl;
-
-    nut_ = nutc * Ct * Ct;
+        scalar Ct = (3. + beta) / (1. + beta + 2. * rhod[i] / rhoc[i]);
+        nut_[i] = nutc[i] * Ct * Ct;
+    }
 }
 
 // ************************************************************************* //
