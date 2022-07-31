@@ -227,6 +227,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
 
     Info << "ReT" << endl;
     Info << min(muc) <<endl;
+    Info << min(rhoc) <<endl;
     const volScalarField &ReT = uPrimec * Le / nuc;
 
     Info << "beta" << endl;
