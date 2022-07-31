@@ -198,41 +198,31 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     Info << "Start correct." << endl;
     const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
 
-    const volScalarField &rhod = phaseSystem_.phase1().rho();
-    const volScalarField &d = phaseSystem_.phase1().d();
+    const scalarField &rhod = phaseSystem_.phase1().rho();
+    const scalarField &d = phaseSystem_.phase1().d();
 
-    const volScalarField &rhoc = phaseSystem_.phase2().rho();
-    const volScalarField &muc = phaseSystem_.phase2().mu();
-    const volScalarField &nuc = phaseSystem_.phase2().nu();
+    const scalarField &rhoc = phaseSystem_.phase2().rho();
+    const scalarField &muc = phaseSystem_.phase2().mu();
+    const scalarField &nuc = phaseSystem_.phase2().nu();
 
-    const volScalarField &nutc = phaseSystem_.phase2().turbulence().nut();
-    const volScalarField &kc = phaseSystem_.phase2().turbulence().k();
-    const volScalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
-
-    dimensionedScalar epsilonRes(
-        "epsilonRes",
-        epsilonc.dimensions(),
-        1E-8);
-
-    dimensionedScalar kRes(
-        "kRes",
-        kc.dimensions(),
-        1E-8);
+    const scalarField &nutc = phaseSystem_.phase2().turbulence().nut();
+    const scalarField &kc = phaseSystem_.phase2().turbulence().k();
+    const scalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
 
     Info << "Le" << endl;
-    volScalarField Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
+    scalarField Le = 0.09 * pow(kc, 1.5) / (epsilonc + 1E-8);
 
     Info << "uPrimec" << endl;
-    volScalarField uPrimec = sqrt(2. * (kc + kRes) / 3.);
+    scalarField uPrimec = sqrt(2. * (kc + 1E-8) / 3.);
 
     Info << "ReT" << endl;
-    volScalarField ReT = uPrimec * Le / nuc;
+    scalarField ReT = uPrimec * Le / nuc;
 
     Info << "beta" << endl;
-    volScalarField beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + 1e-4);
+    scalarField beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + 1e-4);
 
     Info << "Ct" << endl;
-    volScalarField Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
+    scalarField Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
 
     Info << max(Ct) << endl;
 
