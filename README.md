@@ -2,7 +2,7 @@
 
 ## 简介
 
-用于实现Issa提出的颗粒相湍流模型(Issa R I, Oliveira P J. Numerical prediction of turbulent dispersion in two-phase jet flows[J]. Two-phase flow modelling and experimentation 1995, 1995: 421-428.)
+用于实现Issa提出的颗粒相湍流模型(Issa R I, Oliveira P J. Numerical prediction of turbulent dispersion in two-phase jet flows[J]. Two-phase flow modelling and experimentation 1995, 1995: 421-428.)。
 
 ## 安装方法
 
