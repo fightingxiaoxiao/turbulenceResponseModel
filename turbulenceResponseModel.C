@@ -210,6 +210,8 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &kc = phaseSystem_.phase2().turbulence().k();
     const volScalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
     
+    Foam::tmp<Foam::volScalarField> Kd_ = phaseSystem_.Kd();
+
     forAll(rhod,i)
     {
         //Info << "Le" << endl;
@@ -223,7 +225,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         scalar ReT = uPrimec * Le / nuc[i];
 
         //Info << "beta" << endl;
-        scalar beta = (12. * phaseSystem_.Kd()()[i] / M_PI / d_ / muc[i]) * (Le * Le / d_ / d_) / (ReT + 1E-4);
+        scalar beta = (12. * Kd_()[i] / M_PI / d_ / muc[i]) * (Le * Le / d_ / d_) / (ReT + 1E-4);
 
         //Info << "Ct" << endl;
         scalar Ct = (3. + beta) / (1. + beta + 2. * rhod[i] / rhoc[i]);
