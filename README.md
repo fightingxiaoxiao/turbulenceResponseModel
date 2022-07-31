@@ -34,11 +34,11 @@ makeTurbulenceModel
 ```
 
 3. 修改构建脚本
-`$FOAM_SRC/phaseSystemModels/twoPhaseEuler/phaseCompressibleTurbulenceModels/Make/files`修改为：
+`Make/files`修改为：
 ```shell
 phaseCompressibleTurbulenceModels.C
 phasePressureModel/phasePressureModel.C
-turbulenceResponseModel/turbulenceResponseModel.C # <--增加这行
+turbulenceResponseModel/turbulenceResponseModel.C # 增加这行
 
 kineticTheoryModels/kineticTheoryModel/kineticTheoryModel.C
 ...
