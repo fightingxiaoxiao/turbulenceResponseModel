@@ -195,7 +195,7 @@ Foam::RASModels::turbulenceResponseModel::divDevRhoReff(
 
 void Foam::RASModels::turbulenceResponseModel::correct()
 {
-
+    Info << "Start correct." << endl;
     const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
 
     const volScalarField &rhod = phaseSystem_.phase1().rho();
@@ -216,7 +216,10 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         1E-8
     );
 
+    Info << "Le" << endl;
     const volScalarField &Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
+    
+    Info << "uPrimec" << endl;
     const volScalarField &uPrimec = sqrt(2. * kc / 3.);
     const volScalarField &ReT = uPrimec * Le / nuc;
 
@@ -225,7 +228,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
 
     Info << max(Ct) << endl;
-    
+
     nut_ = nutc * Ct * Ct;
 }
 
