@@ -201,7 +201,6 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &rhod = phaseSystem_.phase1().rho();
     const volScalarField &d = phaseSystem_.phase1().d();
 
-    
     const volScalarField &rhoc = phaseSystem_.phase2().rho();
     const volScalarField &muc = phaseSystem_.phase2().mu();
     const volScalarField &nuc = phaseSystem_.phase2().nu();
@@ -225,6 +224,8 @@ void Foam::RASModels::turbulenceResponseModel::correct()
 
     const volScalarField &Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
 
+    Info << max(Ct) << endl;
+    
     nut_ = nutc * Ct * Ct;
 }
 
