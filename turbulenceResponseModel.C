@@ -31,42 +31,33 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel
-(
-    const volScalarField& alpha,
-    const volScalarField& rho,
-    const volVectorField& U,
-    const surfaceScalarField& alphaRhoPhi,
-    const surfaceScalarField& phi,
-    const transportModel& phase,
-    const word& propertiesName,
-    const word& type
-)
-:
-    eddyViscosity
-    <
-        RASModel<EddyDiffusivity<ThermalDiffusivity
-        <
-            PhaseCompressibleTurbulenceModel<phaseModel>
-        >>>
-    >
-    (
-        type,
-        alpha,
-        rho,
-        U,
-        alphaRhoPhi,
-        phi,
-        phase,
-        propertiesName
-    ),
-    alphaMax_(coeffDict_.get<scalar>("alphaMax")),
-    preAlphaExp_(coeffDict_.get<scalar>("preAlphaExp")),
-    expMax_(coeffDict_.get<scalar>("expMax")),
-    g0_("g0", dimPressure, coeffDict_)
+Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel(
+    const volScalarField &alpha,
+    const volScalarField &rho,
+    const volVectorField &U,
+    const surfaceScalarField &alphaRhoPhi,
+    const surfaceScalarField &phi,
+    const transportModel &phase,
+    const word &propertiesName,
+    const word &type)
+    : eddyViscosity<
+          RASModel<EddyDiffusivity<ThermalDiffusivity<
+              PhaseCompressibleTurbulenceModel<phaseModel>>>>>(
+          type,
+          alpha,
+          rho,
+          U,
+          alphaRhoPhi,
+          phi,
+          phase,
+          propertiesName),
+      alphaMax_(coeffDict_.get<scalar>("alphaMax")),
+      preAlphaExp_(coeffDict_.get<scalar>("preAlphaExp")),
+      expMax_(coeffDict_.get<scalar>("expMax")),
+      g0_("g0", dimPressure, coeffDict_)
 
 {
-    //const scalarField &kc_ = alpha.mesh().lookupObject<volScalarField>("k.air");
+    // const scalarField &kc_ = alpha.mesh().lookupObject<volScalarField>("k.air");
 
     if (type == typeName)
     {
@@ -74,21 +65,14 @@ Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel
     }
 }
 
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 bool Foam::RASModels::turbulenceResponseModel::read()
 {
-    if
-    (
-        eddyViscosity
-        <
-            RASModel<EddyDiffusivity<ThermalDiffusivity
-            <
-                PhaseCompressibleTurbulenceModel<phaseModel>
-            >>>
-        >::read()
-    )
+    if (
+        eddyViscosity<
+            RASModel<EddyDiffusivity<ThermalDiffusivity<
+                PhaseCompressibleTurbulenceModel<phaseModel>>>>>::read())
     {
         coeffDict().readEntry("alphaMax", alphaMax_);
         coeffDict().readEntry("preAlphaExp", preAlphaExp_);
@@ -100,14 +84,12 @@ bool Foam::RASModels::turbulenceResponseModel::read()
     return false;
 }
 
-
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::turbulenceResponseModel::k() const
 {
     NotImplemented;
     return nut_;
 }
-
 
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::turbulenceResponseModel::epsilon() const
@@ -116,7 +98,6 @@ Foam::RASModels::turbulenceResponseModel::epsilon() const
     return nut_;
 }
 
-
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::turbulenceResponseModel::omega() const
 {
@@ -124,42 +105,29 @@ Foam::RASModels::turbulenceResponseModel::omega() const
     return nullptr;
 }
 
-
 Foam::tmp<Foam::volSymmTensorField>
 Foam::RASModels::turbulenceResponseModel::R() const
 {
-    return tmp<volSymmTensorField>
-    (
-        new volSymmTensorField
-        (
-            IOobject
-            (
+    return tmp<volSymmTensorField>(
+        new volSymmTensorField(
+            IOobject(
                 IOobject::groupName("R", U_.group()),
                 runTime_.timeName(),
                 mesh_,
                 IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-          - (nut_)*dev(twoSymm(fvc::grad(U_)))
-        )
-    );
+                IOobject::NO_WRITE),
+            -(nut_)*dev(twoSymm(fvc::grad(U_)))));
 }
-
 
 Foam::tmp<Foam::volScalarField>
 Foam::RASModels::turbulenceResponseModel::pPrime() const
 {
-    tmp<volScalarField> tpPrime
-    (
-        g0_
-       *min
-        (
-            exp(preAlphaExp_*(alpha_ - alphaMax_)),
-            expMax_
-        )
-    );
+    tmp<volScalarField> tpPrime(
+        g0_ * min(
+                  exp(preAlphaExp_ * (alpha_ - alphaMax_)),
+                  expMax_));
 
-    volScalarField::Boundary& bpPrime =
+    volScalarField::Boundary &bpPrime =
         tpPrime.ref().boundaryFieldRef();
 
     forAll(bpPrime, patchi)
@@ -173,22 +141,16 @@ Foam::RASModels::turbulenceResponseModel::pPrime() const
     return tpPrime;
 }
 
-
 Foam::tmp<Foam::surfaceScalarField>
 Foam::RASModels::turbulenceResponseModel::pPrimef() const
 {
-    tmp<surfaceScalarField> tpPrime
-    (
-        g0_
-       *min
-        (
-            exp(preAlphaExp_*(fvc::interpolate(alpha_) - alphaMax_)),
-            expMax_
-        )
-    );
+    tmp<surfaceScalarField> tpPrime(
+        g0_ * min(
+                  exp(preAlphaExp_ * (fvc::interpolate(alpha_) - alphaMax_)),
+                  expMax_));
 
-   surfaceScalarField::Boundary& bpPrime =
-       tpPrime.ref().boundaryFieldRef();
+    surfaceScalarField::Boundary &bpPrime =
+        tpPrime.ref().boundaryFieldRef();
 
     forAll(bpPrime, patchi)
     {
@@ -201,61 +163,59 @@ Foam::RASModels::turbulenceResponseModel::pPrimef() const
     return tpPrime;
 }
 
-
 Foam::tmp<Foam::volSymmTensorField>
 Foam::RASModels::turbulenceResponseModel::devRhoReff() const
 {
     return devRhoReff(U_);
 }
 
-
 Foam::tmp<Foam::volSymmTensorField>
-Foam::RASModels::turbulenceResponseModel::devRhoReff
-(
-    const volVectorField& U
-) const
+Foam::RASModels::turbulenceResponseModel::devRhoReff(
+    const volVectorField &U) const
 {
-    return tmp<volSymmTensorField>
-    (
-        new volSymmTensorField
-        (
-            IOobject
-            (
+    return tmp<volSymmTensorField>(
+        new volSymmTensorField(
+            IOobject(
                 IOobject::groupName("devRhoReff", U.group()),
                 runTime_.timeName(),
                 mesh_,
                 IOobject::NO_READ,
-                IOobject::NO_WRITE
-            ),
-          - (rho_*nut_)
-           *dev(twoSymm(fvc::grad(U)))
-        )
-    );
+                IOobject::NO_WRITE),
+            -(rho_ * nut_) * dev(twoSymm(fvc::grad(U)))));
 }
-
 
 Foam::tmp<Foam::fvVectorMatrix>
-Foam::RASModels::turbulenceResponseModel::divDevRhoReff
-(
-    volVectorField& U
-) const
+Foam::RASModels::turbulenceResponseModel::divDevRhoReff(
+    volVectorField &U) const
 {
-    return
-    (
-      - fvm::laplacian(rho_*nut_, U)
-      - fvc::div
-        (
-            (rho_*nut_)*dev2(T(fvc::grad(U)))
-        )
-    );
+    return (
+        -fvm::laplacian(rho_ * nut_, U) - fvc::div(
+                                              (rho_ * nut_) * dev2(T(fvc::grad(U)))));
 }
-
 
 void Foam::RASModels::turbulenceResponseModel::correct()
 {
-    const volScalarField &nutc_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties").phase2().turbulence().nut();
-    nut_ = nutc_;
-}
 
+    const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
+
+    const volScalarField &rhod = phaseSystem_.phase1().rho();
+    const volScalarField &d = phaseSystem_.phase1().rho();
+
+    const volScalarField &nutc = phaseSystem_.phase2().nut();
+    const volScalarField &rhoc = phaseSystem_.phase2().rho();
+    const volScalarField &muc = phaseSystem_.phase2().mu();
+    const volScalarField &nuc = phaseSystem_.phase2().nu();
+    const volScalarField &kc = phaseSystem_.phase2().k();
+    const volScalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
+
+    const volScalarField &Le = 0.09 * pow(kc, 1.5) / epsilonc;
+    const volScalarField &uPrimec = sqrt(2 * kc / 3);
+    const volScalarField &ReT = uPrimec * Le / nuc;
+
+    const volScalarField &beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / ReT;
+
+    const volScalarField &Ct = (3. + beta) / (1 + beta + 2. * rhod / rhoc);
+    nut_ = nutc * Ct;
+}
 
 // ************************************************************************* //
