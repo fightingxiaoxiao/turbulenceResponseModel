@@ -2,6 +2,8 @@
 
 ## 简介
 
+用于实现Issa提出的颗粒相湍流模型(Issa R I, Oliveira P J. Numerical prediction of turbulent dispersion in two-phase jet flows[J]. Two-phase flow modelling and experimentation 1995, 1995: 421-428.)
+
 ## 安装方法
 
 1. 下载分支
@@ -11,6 +13,7 @@ git clone https://github.com/fightingxiaoxiao/turbulenceResponseModel.git
 ```
 
 2. 添加头文件
+
 在`phaseCompressibleTurbulenceModels.C`中附加头文件：
 ```cpp
 // -------------------------------------------------------------------------- //
@@ -34,6 +37,7 @@ makeTurbulenceModel
 ```
 
 3. 修改构建脚本
+
 `Make/files`修改为：
 ```shell
 phaseCompressibleTurbulenceModels.C
