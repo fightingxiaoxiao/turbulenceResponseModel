@@ -6,8 +6,8 @@
 
 1. 下载分支
 ```shell
+cd $FOAM_SRC/phaseSystemModels/twoPhaseEuler/phaseCompressibleTurbulenceModels
 git clone https://github.com/fightingxiaoxiao/turbulenceResponseModel.git
-cp -r turbulenceResponseModel $FOAM_SRC/phaseSystemModels/twoPhaseEuler/phaseCompressibleTurbulenceModels
 ```
 
 2. 添加头文件
