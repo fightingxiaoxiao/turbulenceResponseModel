@@ -226,8 +226,10 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &uPrimec = sqrt(2. * (kc + kRes) / 3.);
     const volScalarField &ReT = uPrimec * Le / nuc;
 
+    Info << "beta" << endl;
     const volScalarField &beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + 1e-4);
 
+    Info << "Ct" << endl;
     const volScalarField &Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
 
     Info << max(Ct) << endl;
