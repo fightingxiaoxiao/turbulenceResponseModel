@@ -219,6 +219,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         scalar uPrimec = sqrt(2. * (kc[i] + 1E-8) / 3.);
 
         Info << "ReT" << endl;
+        Info << nuc[i] << endl;
         scalar ReT = uPrimec * Le / nuc[i];
 
         Info << "beta" << endl;
