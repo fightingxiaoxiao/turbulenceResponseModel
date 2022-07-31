@@ -197,7 +197,7 @@ Foam::RASModels::turbulenceResponseModel::divDevRhoReff(
 
 void Foam::RASModels::turbulenceResponseModel::correct()
 {
-    Info << "Start correct." << endl;
+    //Info << "Start correct." << endl;
     const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
 
     const volScalarField &rhod = phaseSystem_.phase1().rho();
