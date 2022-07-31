@@ -199,13 +199,15 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
 
     const volScalarField &rhod = phaseSystem_.phase1().rho();
-    const volScalarField &d = phaseSystem_.phase1().rho();
+    const volScalarField &d = phaseSystem_.phase1().d();
 
-    const volScalarField &nutc = phaseSystem_.phase2().nut();
+    
     const volScalarField &rhoc = phaseSystem_.phase2().rho();
     const volScalarField &muc = phaseSystem_.phase2().mu();
     const volScalarField &nuc = phaseSystem_.phase2().nu();
-    const volScalarField &kc = phaseSystem_.phase2().k();
+
+    const volScalarField &nutc = phaseSystem_.phase2().turbulence().nut();
+    const volScalarField &kc = phaseSystem_.phase2().turbulence().k();
     const volScalarField &epsilonc = phaseSystem_.phase2().turbulence().epsilon();
 
     const volScalarField &Le = 0.09 * pow(kc, 1.5) / epsilonc;
@@ -213,8 +215,9 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &ReT = uPrimec * Le / nuc;
 
     const volScalarField &beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / ReT;
-
+    
     const volScalarField &Ct = (3. + beta) / (1 + beta + 2. * rhod / rhoc);
+
     nut_ = nutc * Ct;
 }
 
