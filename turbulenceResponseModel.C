@@ -221,13 +221,14 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         scalar ReT = uPrimec * Le / nuc[i];
 
         Info << "beta" << endl;
+        Info << phaseSystem_.Kd()()[i] << endl;
         scalar beta = (12. * phaseSystem_.Kd()()[i] / M_PI / d[i] / muc[i]) * (Le * Le / d[i] / d[i]) / (ReT + 1E-4);
 
         Info << "Ct" << endl;
         scalar Ct = (3. + beta) / (1. + beta + 2. * rhod[i] / rhoc[i]);
 
         Info << Ct << endl;
-        
+
         nut_[i] = nutc[i] * Ct * Ct;
     }
 }
