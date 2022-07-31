@@ -220,10 +220,10 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         1E-8);
 
     Info << "Le" << endl;
-    const volScalarField &Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
+    volScalarField Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
 
     Info << "uPrimec" << endl;
-    const volScalarField &uPrimec = sqrt(2. * (kc + kRes) / 3.);
+    volScalarField uPrimec = sqrt(2. * (kc + kRes) / 3.);
 
     Info << "ReT" << endl;
     volScalarField ReT = uPrimec * Le / nuc;
