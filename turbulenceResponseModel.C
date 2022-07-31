@@ -217,7 +217,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     dimensionedScalar kRes(
         "kRes",
         kc.dimensions(),
-        1E-6);
+        1E-8);
 
     Info << "Le" << endl;
     const volScalarField &Le = 0.09 * pow(kc, 1.5) / (epsilonc + epsilonRes);
@@ -226,15 +226,13 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const volScalarField &uPrimec = sqrt(2. * (kc + kRes) / 3.);
 
     Info << "ReT" << endl;
-    Info << min(muc) <<endl;
-    Info << min(rhoc) <<endl;
-    const volScalarField &ReT = uPrimec * Le / nuc;
+    volScalarField ReT = uPrimec * Le / nuc;
 
     Info << "beta" << endl;
-    const volScalarField &beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + 1e-4);
+    volScalarField beta = (12. * phaseSystem_.Kd() / M_PI / d / muc) * (Le * Le / d / d) / (ReT + 1e-4);
 
     Info << "Ct" << endl;
-    const volScalarField &Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
+    volScalarField Ct = (3. + beta) / (1. + beta + 2. * rhod / rhoc);
 
     Info << max(Ct) << endl;
 
