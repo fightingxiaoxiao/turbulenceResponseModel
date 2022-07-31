@@ -80,6 +80,7 @@ class turbulenceResponseModel
             //- g0
             dimensionedScalar g0_;
 
+            scalar d_;
 
     // Private Member Functions
 

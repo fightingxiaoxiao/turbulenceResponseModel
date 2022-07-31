@@ -54,7 +54,8 @@ Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel(
       alphaMax_(coeffDict_.get<scalar>("alphaMax")),
       preAlphaExp_(coeffDict_.get<scalar>("preAlphaExp")),
       expMax_(coeffDict_.get<scalar>("expMax")),
-      g0_("g0", dimPressure, coeffDict_)
+      g0_("g0", dimPressure, coeffDict_),
+      d_(coeffDict_.get<scalar>("d"))
 
 {
     // const scalarField &kc_ = alpha.mesh().lookupObject<volScalarField>("k.air");
@@ -78,6 +79,7 @@ bool Foam::RASModels::turbulenceResponseModel::read()
         coeffDict().readEntry("preAlphaExp", preAlphaExp_);
         coeffDict().readEntry("expMax", expMax_);
         g0_.readIfPresent(coeffDict());
+        coeffDict().readEntry("d", expMax_);
         return true;
     }
 
@@ -199,7 +201,6 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     const twoPhaseSystem &phaseSystem_ = nut_.mesh().lookupObject<twoPhaseSystem>("phaseProperties");
 
     const volScalarField &rhod = phaseSystem_.phase1().rho();
-    tmp<volScalarField> &d = phaseSystem_.phase1().dPtr().d();
 
     const volScalarField &rhoc = phaseSystem_.phase2().rho();
     const volScalarField &muc = phaseSystem_.phase2().mu();
@@ -221,15 +222,12 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         scalar ReT = uPrimec * Le / nuc[i];
 
         Info << "beta" << endl;
-        Info << d()[i] << endl;
-        Info << muc[i] <<endl;
-
-        scalar beta = (12. * phaseSystem_.Kd()()[i] / 3.1415926 / d()[i] / muc[i]) * (Le * Le / d()[i] / d()[i]) / (ReT + 1E-4);
+        scalar beta = (12. * phaseSystem_.Kd()()[i] / M_PI / d_ / muc[i]) * (Le * Le / d_ / d_) / (ReT + 1E-4);
 
         Info << "Ct" << endl;
         scalar Ct = (3. + beta) / (1. + beta + 2. * rhod[i] / rhoc[i]);
 
-        Info << Ct << endl;
+        //Info << Ct << endl;
 
         nut_[i] = nutc[i] * Ct * Ct;
     }
