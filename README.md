@@ -11,7 +11,7 @@ git clone https://github.com/fightingxiaoxiao/turbulenceResponseModel.git
 ```
 
 2. 添加头文件
-
+在`phaseCompressibleTurbulenceModels.C`中附加头文件：
 ```cpp
 // -------------------------------------------------------------------------- //
 // Additional models
