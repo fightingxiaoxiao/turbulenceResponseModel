@@ -221,6 +221,9 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         scalar ReT = uPrimec * Le / nuc[i];
 
         Info << "beta" << endl;
+        Info << d[i] << endl;
+        Info << muc[i] <<endl;
+        
         scalar beta = (12. * phaseSystem_.Kd()()[i] / 3.1415926 / d[i] / muc[i]) * (Le * Le / d[i] / d[i]) / (ReT + 1E-4);
 
         Info << "Ct" << endl;
