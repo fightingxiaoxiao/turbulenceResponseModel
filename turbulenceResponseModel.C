@@ -141,7 +141,6 @@ Foam::RASModels::turbulenceResponseModel::R() const
                 IOobject::NO_WRITE
             ),
           - (nut_)*dev(twoSymm(fvc::grad(U_)))
-          - (lambda_*fvc::div(phi_))*symmTensor::I
         )
     );
 }
