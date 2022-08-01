@@ -77,7 +77,7 @@ bool Foam::RASModels::turbulenceResponseModel::read()
         coeffDict().readEntry("preAlphaExp", preAlphaExp_);
         coeffDict().readEntry("expMax", expMax_);
         g0_.readIfPresent(coeffDict());
-        coeffDict().readEntry("d", expMax_);
+        coeffDict().readEntry("d", d_);
         return true;
     }
 
