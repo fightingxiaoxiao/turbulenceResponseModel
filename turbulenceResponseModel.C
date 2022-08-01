@@ -40,9 +40,8 @@ Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel(
     const transportModel &phase,
     const word &propertiesName,
     const word &type)
-    : eddyViscosity<
-          RASModel<EddyDiffusivity<ThermalDiffusivity<
-              PhaseCompressibleTurbulenceModel<phaseModel>>>>>(
+    : 
+    eddyViscosity<RASModel<EddyDiffusivity<ThermalDiffusivity<PhaseCompressibleTurbulenceModel<phaseModel>>>>>(
           type,
           alpha,
           rho,
@@ -50,7 +49,8 @@ Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel(
           alphaRhoPhi,
           phi,
           phase,
-          propertiesName),
+          propertiesName
+    ),
       alphaMax_(coeffDict_.get<scalar>("alphaMax")),
       preAlphaExp_(coeffDict_.get<scalar>("preAlphaExp")),
       expMax_(coeffDict_.get<scalar>("expMax")),
@@ -71,9 +71,7 @@ Foam::RASModels::turbulenceResponseModel::turbulenceResponseModel(
 bool Foam::RASModels::turbulenceResponseModel::read()
 {
     if (
-        eddyViscosity<
-            RASModel<EddyDiffusivity<ThermalDiffusivity<
-                PhaseCompressibleTurbulenceModel<phaseModel>>>>>::read())
+        eddyViscosity<RASModel<EddyDiffusivity<ThermalDiffusivity<PhaseCompressibleTurbulenceModel<phaseModel>>>>>::read())
     {
         coeffDict().readEntry("alphaMax", alphaMax_);
         coeffDict().readEntry("preAlphaExp", preAlphaExp_);
@@ -110,15 +108,21 @@ Foam::RASModels::turbulenceResponseModel::omega() const
 Foam::tmp<Foam::volSymmTensorField>
 Foam::RASModels::turbulenceResponseModel::R() const
 {
-    return tmp<volSymmTensorField>(
-        new volSymmTensorField(
-            IOobject(
+    return tmp<volSymmTensorField>
+    (
+        new volSymmTensorField
+        (
+            IOobject
+            (
                 IOobject::groupName("R", U_.group()),
                 runTime_.timeName(),
                 mesh_,
                 IOobject::NO_READ,
-                IOobject::NO_WRITE),
-            -(nut_)*dev(twoSymm(fvc::grad(U_)))));
+                IOobject::NO_WRITE
+            ),
+            -(nut_)*dev(twoSymm(fvc::grad(U_)))
+        )
+    );
 }
 
 Foam::tmp<Foam::volScalarField>
@@ -146,10 +150,14 @@ Foam::RASModels::turbulenceResponseModel::pPrime() const
 Foam::tmp<Foam::surfaceScalarField>
 Foam::RASModels::turbulenceResponseModel::pPrimef() const
 {
-    tmp<surfaceScalarField> tpPrime(
-        g0_ * min(
-                  exp(preAlphaExp_ * (fvc::interpolate(alpha_) - alphaMax_)),
-                  expMax_));
+    tmp<surfaceScalarField> tpPrime
+    (
+        g0_ * min
+        (
+            exp(preAlphaExp_ * (fvc::interpolate(alpha_) - alphaMax_)),
+            expMax_
+        )
+    );
 
     surfaceScalarField::Boundary &bpPrime =
         tpPrime.ref().boundaryFieldRef();
@@ -172,27 +180,31 @@ Foam::RASModels::turbulenceResponseModel::devRhoReff() const
 }
 
 Foam::tmp<Foam::volSymmTensorField>
-Foam::RASModels::turbulenceResponseModel::devRhoReff(
-    const volVectorField &U) const
+Foam::RASModels::turbulenceResponseModel::devRhoReff(const volVectorField &U) const
 {
-    return tmp<volSymmTensorField>(
-        new volSymmTensorField(
-            IOobject(
-                IOobject::groupName("devRhoReff", U.group()),
-                runTime_.timeName(),
-                mesh_,
-                IOobject::NO_READ,
-                IOobject::NO_WRITE),
-            -(rho_ * nut_) * dev(twoSymm(fvc::grad(U)))));
+    return  tmp<volSymmTensorField>
+            (
+                new volSymmTensorField(
+                IOobject
+                (
+                    IOobject::groupName("devRhoReff", U.group()),
+                    runTime_.timeName(),
+                    mesh_,
+                    IOobject::NO_READ,
+                    IOobject::NO_WRITE
+                ),
+                -(rho_ * nut_) * dev(twoSymm(fvc::grad(U))))
+            );
 }
 
 Foam::tmp<Foam::fvVectorMatrix>
 Foam::RASModels::turbulenceResponseModel::divDevRhoReff(
     volVectorField &U) const
 {
-    return (
-        -fvm::laplacian(rho_ * nut_, U) - fvc::div(
-                                              (rho_ * nut_) * dev2(T(fvc::grad(U)))));
+    return
+    (
+    - fvm::laplacian(rho_ * nut_, U) 
+    - fvc::div((rho_ * nut_) * dev2(T(fvc::grad(U)))));
 }
 
 void Foam::RASModels::turbulenceResponseModel::correct()
@@ -230,9 +242,10 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         //Info << "Ct" << endl;
         scalar Ct = (3. + beta) / (1. + beta + 2. * rhod[i] / rhoc[i]);
 
-        //Info << Ct << endl;
         nut_[i] = nutc[i] * Ct * Ct;
     }
+
+    info << "\nCt Maximum: "<< max(sqrt(nut_/nutc)) << "\n"<< endl;
 }
 
 // ************************************************************************* //
