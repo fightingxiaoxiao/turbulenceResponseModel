@@ -245,7 +245,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
         nut_[i] = nutc[i] * Ct * Ct;
     }
 
-    info << "\nCt Maximum: "<< max(sqrt(nut_/nutc)) << "\n"<< endl;
+    Info << "\nCt Maximum: "<< max(sqrt(nut_/nutc)) << "\n"<< endl;
 }
 
 // ************************************************************************* //
