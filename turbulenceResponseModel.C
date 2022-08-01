@@ -224,7 +224,7 @@ void Foam::RASModels::turbulenceResponseModel::correct()
     
     Foam::tmp<Foam::volScalarField> Kd_ = phaseSystem_.Kd();
 
-    forAll(rhod,i)
+    forAll(rhod, i)
     {
         //Info << "Le" << endl;
         scalar Le = 0.09 * pow(kc[i] + 1E-8, 1.5) / (epsilonc[i]+1E-8);
